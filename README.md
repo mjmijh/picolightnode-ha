@@ -155,6 +155,20 @@ Die folgenden Screenshots zeigen die [`dali_dt8_cct_bri.json`](docs/examples/set
 
 ---
 
+### DALI DT6 – Blockly-Ansicht
+
+Die folgenden Screenshots zeigen die [`dali_dt6_cct_bri.json`](docs/examples/setup/dali_dt6_cct_bri.json) im PICO Blockly-Tool.
+
+**CCT-Target** (TC Space, TCBLEND-Konvertierung + 2x DAPC):
+
+![DT6 CCT Target](docs/examples/setup/img/dali_dt6_cct_blockly.png)
+
+**BRI-Target** (Brightness Space, DAPC-Assignment):
+
+![DT6 BRI Target](docs/examples/setup/img/dali_dt6_bri_blockly.png)
+
+---
+
 ### Aufbau der setup.json
 
 Eine `setup.json` ist ein JSON-Array von **Targets**. Jeder Target repräsentiert einen Lichtkanal, der vom PICO berechnet und ausgegeben wird.
