@@ -1,0 +1,12 @@
+{
+  "domain": "picolightnode",
+  "name": "PICOlightnode",
+  "version": "2.0.18",
+  "documentation": "https://example.invalid",
+  "requirements": [],
+  "dependencies": [
+    "mqtt"
+  ],
+  "codeowners": [],
+  "config_flow": true
+}

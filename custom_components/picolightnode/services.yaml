@@ -1,0 +1,54 @@
+apply_automation_point:
+  name: Apply automation point
+  description: >
+    Apply a point via the AUTOMATION override path of a PICO target.
+    Respects allow_external_automation per target; if disabled, the call is ignored.
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: light
+    brightness:
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    color_temp_kelvin:
+      required: false
+      selector:
+        number:
+          min: 1000
+          max: 10000
+          mode: box
+    transition:
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 3600
+          mode: box
+
+release_automation:
+  name: Release automation override
+  description: >
+    Disable (enabled:false) the AUTOMATION override block for the given PICO target.
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: light
+
+release_manual:
+  name: Release manual override
+  description: >
+    Disable (enabled:false) the MANUAL override block for the given PICO target.
+  fields:
+    entity_id:
+      required: true
+      selector:
+        entity:
+          domain: light

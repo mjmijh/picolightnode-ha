@@ -1,0 +1,32 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "PICOlightnode",
+        "data": {
+          "name": "Name",
+          "device_id": "Device-ID"
+        }
+      },
+      "target": {
+        "title": "Target hinzufügen",
+        "data": {
+          "name": "Target-Name",
+          "id": "Target-ID (leer lassen = automatisch)",
+          "state_topic": "State-Topic",
+          "override_topic": "Override-Topic",
+          "min_kelvin": "Min. Kelvin",
+          "max_kelvin": "Max. Kelvin",
+          "manual_override_topic": "Override-Topic (manuell)",
+          "automation_override_topic": "Override-Topic (Automation)"
+        }
+      },
+      "menu": {
+        "title": "Targets",
+        "data": {
+          "menu": "Nächster Schritt"
+        }
+      }
+    }
+  }
+}
