@@ -141,6 +141,20 @@ Die `setup.json` ist die zentrale Konfigurationsdatei des PICO-Geräts und legt 
 
 ---
 
+### DALI DT8 – Blockly-Ansicht
+
+Die folgenden Screenshots zeigen die [`dali_dt8_cct_bri.json`](docs/examples/setup/dali_dt8_cct_bri.json) im PICO Blockly-Tool.
+
+**CCT-Target** (TC Space, DT8TC-Assignment):
+
+![DT8 CCT Target](docs/examples/setup/img/dali_dt8_cct_blockly.png)
+
+**BRI-Target** (Brightness Space, DAPC-Assignment):
+
+![DT8 BRI Target](docs/examples/setup/img/dali_dt8_bri_blockly.png)
+
+---
+
 ### Aufbau der setup.json
 
 Eine `setup.json` ist ein JSON-Array von **Targets**. Jeder Target repräsentiert einen Lichtkanal, der vom PICO berechnet und ausgegeben wird.
