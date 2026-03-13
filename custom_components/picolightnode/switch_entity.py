@@ -94,41 +94,18 @@ class PicoFollowExternalSwitch(
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        """Handle updated data from the coordinator.
-        
-        This is called whenever coordinator.async_set_updated_data() is called,
-        which happens when the Light Entity changes follow_external state.
-        """
-        _LOGGER.warning(
-        )
-        
-        # Sync from coordinator
+        """Handle updated data from the coordinator."""
         st = self._state()
         old_state = self._follow_external
-        
-        _LOGGER.warning(
-            f"st.follow_external={st.follow_external}"
-        )
-        
         self._follow_external = st.follow_external
-        
-        # Log state changes for debugging
+
         if old_state != self._follow_external:
-            _LOGGER.warning(
-                f"follow_external {old_state} → {self._follow_external}"
+            _LOGGER.debug(
+                "%s: follow_external %s → %s",
+                self.entity_id, old_state, self._follow_external
             )
-        else:
-            _LOGGER.warning(
-            )
-        
-        # Trigger UI update
-        _LOGGER.warning(
-        )
-        
+
         self.async_write_ha_state()
-        
-        _LOGGER.warning(
-        )
 
     def _state(self) -> PicoTargetState:
         """Get current target state from coordinator."""
@@ -138,25 +115,7 @@ class PicoFollowExternalSwitch(
 
     @property
     def is_on(self) -> bool:
-        """Return true if following external automation.
-        
-        Syncs state from coordinator to stay in sync with Light Entity.
-        """
-        _LOGGER.debug(
-            f"current self._follow_external={self._follow_external}"
-        )
-        
-        # Sync from coordinator first (Light Entity may have changed it)
-        st = self._state()
-        
-        _LOGGER.debug(
-        )
-        
-        self._follow_external = st.follow_external
-        
-        _LOGGER.debug(
-        )
-        
+        """Return true if following external automation."""
         return self._follow_external
 
     async def async_turn_on(self, **kwargs) -> None:
