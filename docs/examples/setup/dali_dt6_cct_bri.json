@@ -1,0 +1,181 @@
+[
+  {
+    "comment": "building/area/room/segment/luminaire/lightentityCCT",
+    "type"         :"TARGET",
+    "space"        : "TC",
+    "behaviors"    : [
+      {
+        "type"  : "STATIC",
+        "point" : {
+          "space"       : "TC",
+            "brightness"  : 0,
+            "temperature" : 2700,
+            "fade"        : 0
+        }
+      },
+      {
+        "type"           : "OVERRIDE",
+        "topic"          : "building/area/room/segment/luminaire/lightentityCCT/override/automation",
+        "defaultpoint"   : {
+          "space"       : "TC",
+            "brightness"  : 0,
+            "temperature" : 2700,
+            "fade"        : 0
+        },
+        "enabledatstart" : false,
+        "timeout"        : -1
+      },
+      {
+        "type"           : "OVERRIDE",
+        "topic"          : "building/area/room/segment/luminaire/lightentityCCT/override/manual",
+        "defaultpoint"   : {
+          "space"       : "TC",
+            "brightness"  : 0,
+            "temperature" : 2700,
+            "fade"        : 0
+        },
+        "enabledatstart" : false,
+        "timeout"        : -1
+      }
+    ],
+    "destinations" : [
+      {
+        "type"        : "DALI",
+        "conversions" : [
+          {
+            "type"       : "TCBLEND",
+            "mintemp"    : 2700,
+            "minpoint"   : {
+              "space" : "WWCW",
+              "warm"  : 1,
+              "cold"  : 0,
+              "fade"  : 0
+            },
+            "maxtemp"    : 5700,
+            "maxpoint"   : {
+              "space" : "WWCW",
+              "warm"  : 0,
+              "cold"  : 1,
+              "fade"  : 0
+            },
+            "blendgamma" : 1,
+            "dimgamma"   : 1
+          }
+        ],
+        "assignments" : [
+          {
+            "type"   : "DAPC",
+            "offset" : 0,
+            "address" : 0
+          },
+          {
+            "type"   : "DAPC",
+            "offset" : 1,
+            "address" : 1
+          }
+        ]
+      },
+      {
+        "type" : "HTTPSERVER",
+        "name" : "building/area/room/segment/luminaire/lightentityCCT"
+      },
+      {
+        "type"        : "MESSAGING",
+        "topic"       : "building/area/room/segment/luminaire/lightentityCCT/state",
+        "sendlocal"   : false,
+        "sendmqtt"    : true,
+        "qos"         : 0,
+        "retain"      : false,
+        "assignments" : [
+          {
+            "trigger"  : "ALWAYS",
+            "key"      : "brightness",
+            "channel"  : "0",
+            "asbool"   : false,
+            "necessary" : false
+          },
+          {
+            "trigger"  : "ALWAYS",
+            "key"      : "cct",
+            "channel"  : "1",
+            "asbool"   : false,
+            "necessary" : false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "comment": "building/area/room/segment/luminaire/lightentityBRI",
+    "type"         :"TARGET",
+    "space"        : "BRIGHTNESS",
+    "behaviors"    : [
+      {
+        "type"  : "STATIC",
+        "point" : {
+          "space"      : "BRIGHTNESS",
+              "brightness" : 0,
+              "fade"       : 0
+        }
+      },
+      {
+        "type"           : "OVERRIDE",
+        "topic"          : "building/area/room/segment/luminaire/lightentityBRI/override/automation",
+        "defaultpoint"   : {
+          "space"      : "BRIGHTNESS",
+              "brightness" : 0,
+              "fade"       : 0
+        },
+        "enabledatstart" : false,
+        "timeout"        : -1
+      },
+      {
+        "type"           : "OVERRIDE",
+        "topic"          : "building/area/room/segment/luminaire/lightentityBRI/override/manual",
+        "defaultpoint"   : {
+          "space"      : "BRIGHTNESS",
+              "brightness" : 0,
+              "fade"       : 0
+        },
+        "enabledatstart" : false,
+        "timeout"        : -1
+      }
+    ],
+    "destinations" : [
+      {
+        "type"        : "DALI",
+        "conversions" : [
+
+        ],
+        "assignments" : [
+          {
+            "type"   : "DAPC",
+            "offset" : 0,
+            "address" : 3
+          }
+        ]
+      },
+      {
+        "type" : "HTTPSERVER",
+        "name" : "building/area/room/segment/luminaire/lightentityBRI"
+      },
+      {
+        "type"        : "MESSAGING",
+        "topic"       : "building/area/room/segment/luminaire/lightentityBRI/state",
+        "sendlocal"   : false,
+        "sendmqtt"    : true,
+        "qos"         : 0,
+        "retain"      : false,
+        "assignments" : [
+          {
+            "trigger"  : "ALWAYS",
+            "key"      : "brightness",
+            "channel"  : "0",
+            "asbool"   : false,
+            "necessary" : false
+          }
+        ]
+      }
+    ]
+  }
+]
