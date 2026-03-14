@@ -187,16 +187,15 @@ class PicoLight(
                 enabled=False, space=self._target_space
             )
         
-        # Update persistent state
+        # Update persistent state (follow_external is preserved from RestoreEntity)
         self._manual_override_enabled = False
         self._automation_override_enabled = False
-        self._follow_external = False
-        
-        # Sync to coordinator
+
+        # Sync to coordinator (follow_external intentionally NOT reset here —
+        # it is managed by PicoFollowExternalSwitch via RestoreEntity)
         st.manual_override_enabled = False
         st.automation_override_enabled = False
-        st.follow_external = False
-        
+
         _LOGGER.info(f"{self.entity_id}: Reset to Internal Auto mode")
 
     def _state(self) -> PicoTargetState:
