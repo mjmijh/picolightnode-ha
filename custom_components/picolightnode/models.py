@@ -33,7 +33,7 @@ class PicoTargetState:
     automation_override_enabled: Optional[bool] = None
 
     # Local gate for external automation (Keyframer/CCT Astronomy)
-    follow_external: bool = True
+    follow_external: bool = False
 
     # Optimistic fallback for turn_on/turn_off (until next device state arrives)
     last_sent_point: Optional[PicoPointTC] = None
