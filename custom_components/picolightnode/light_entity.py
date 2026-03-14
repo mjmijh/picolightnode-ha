@@ -496,6 +496,11 @@ class PicoLight(
                 )
                 self._automation_override_enabled = False
                 st.automation_override_enabled = False
-        
+
+            # Clear follow_external so the switch reflects "off" while light is off
+            self._follow_external = False
+            self._sync_state_to_coordinator()
+            self.coordinator.async_set_updated_data(self.coordinator.data)
+
         self._manual_override_enabled = True
         st.manual_override_enabled = True
