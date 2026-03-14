@@ -313,8 +313,6 @@ class PicoLight(
             return
         
         # No saved mode - manual control
-        _LOGGER.warning(
-        )
         await self._manual_control(st, brightness, temp_k, transition)
 
     async def _restore_mode(self, st: PicoTargetState, transition: float | None) -> None:
@@ -323,17 +321,8 @@ class PicoLight(
         
         if mode == "follow":
             # Re-enable Follow External
-            _LOGGER.warning(
-            )
-            
             self._follow_external = True
-            _LOGGER.warning(
-            )
-            
             self._sync_state_to_coordinator()
-            _LOGGER.warning(
-                f"st.follow_external should now be True"
-            )
             
             # Get saved brightness or use 100% as fallback
             restore_b = self._brightness_before_off or 255
@@ -343,10 +332,7 @@ class PicoLight(
             point = merge_point(st, restore_b, restore_t, 0.0, self._target_space)
             st.last_sent_point = point
             st.point = point  # Immediate UI update
-            
-            _LOGGER.warning(
-            )
-            
+
             # Release manual override (no point needed)
             await publish_override_point(
                 self._mqtt, self._manual_override_topic, point=None,
@@ -354,10 +340,7 @@ class PicoLight(
             )
             self._manual_override_enabled = False
             st.manual_override_enabled = False
-            
-            _LOGGER.warning(
-            )
-            
+
             # Enable automation override WITH saved brightness as initial value
             # External automation (Keyframe Scheduler, Adaptive Lighting) will override shortly
             automation_topic = self._target.get(CONF_AUTOMATION_OVERRIDE_TOPIC)
@@ -368,9 +351,6 @@ class PicoLight(
                 )
                 self._automation_override_enabled = True
                 st.automation_override_enabled = True
-                
-                _LOGGER.warning(
-                )
             
             # Notify coordinator to update switch state
             self.coordinator.async_set_updated_data(self.coordinator.data)
