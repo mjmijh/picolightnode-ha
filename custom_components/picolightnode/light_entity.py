@@ -12,7 +12,7 @@ from homeassistant.components.light import (
     LightEntity,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, Context
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -355,11 +355,7 @@ class PicoLight(
             # Notify coordinator to update switch state
             self.coordinator.async_set_updated_data(self.coordinator.data)
             
-            # Write state with PICO-internal context
-            # This allows Keyframe Blueprint to ignore this state change
-            self.async_write_ha_state(
-                context=Context(id="picolightnode_restore")
-            )
+            self.async_write_ha_state()
             
             _LOGGER.info(
                 f"{self.entity_id}: Restored Follow External mode "
