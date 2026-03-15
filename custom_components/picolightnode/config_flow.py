@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import logging
 import re
 import voluptuous as vol
+
+_LOGGER = logging.getLogger(__name__)
 
 from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
@@ -78,8 +81,8 @@ class PicoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_TARGET_SPACE,
                     default=SPACE_TC
                 ): vol.In({
-                    SPACE_TC: "Tunable White (mit Kelvin-Steuerung)",
-                    SPACE_BRIGHTNESS: "Brightness Only (Kelvin-Felder unten ignorieren)",
+                    SPACE_TC: "Tunable White (with Kelvin control)",
+                    SPACE_BRIGHTNESS: "Brightness only (Kelvin fields ignored)",
                 }),
                 vol.Required(CONF_STATE_TOPIC): str,
                 vol.Required(CONF_MANUAL_OVERRIDE_TOPIC): str,
@@ -97,7 +100,7 @@ class PicoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return await self.async_step_target()
             return await self.async_step_finish()
 
-        schema = vol.Schema({vol.Required('add_more', default='yes'): vol.In({'yes': 'Noch ein Target hinzufügen', 'no': 'Fertig'})})
+        schema = vol.Schema({vol.Required('add_more', default='yes'): vol.In({'yes': 'Add another target', 'no': 'Done'})})
         return self.async_show_form(step_id='add_more', data_schema=schema)
 
     async def async_step_finish(self, user_input=None) -> FlowResult:
@@ -144,18 +147,18 @@ class PicoOptionsFlow(config_entries.OptionsFlow):
                 # Just exit - no explicit save needed
                 return self.async_create_entry(title="", data={})
 
-        options = {"add_target": "Target hinzufügen"}
+        options = {"add_target": "Add target"}
         if len(self._targets) > 0:
-            options["edit_target"] = "Target bearbeiten"
-            options["remove_target"] = "Target entfernen"
-        options["done"] = "Fertig"
+            options["edit_target"] = "Edit target"
+            options["remove_target"] = "Remove target"
+        options["done"] = "Done"
 
         return self.async_show_form(
             step_id="menu",
             data_schema=vol.Schema({vol.Required("menu"): vol.In(options)}),
             description_placeholders={
                 "count": str(len(self._targets)),
-                "targets": ", ".join(t.get(CONF_TARGET_NAME, t[CONF_TARGET_ID]) for t in self._targets) if self._targets else "Keine"
+                "targets": ", ".join(t.get(CONF_TARGET_NAME, t[CONF_TARGET_ID]) for t in self._targets) if self._targets else "None"
             },
         )
 
@@ -290,22 +293,11 @@ class PicoOptionsFlow(config_entries.OptionsFlow):
             # When editing: Show current ID as disabled text field + warning
             current_id = defaults.get(CONF_TARGET_ID, 'N/A')
             
-            # Add warning message as a selector text (will be shown above fields)
-            import logging
-            _LOGGER = logging.getLogger(__name__)
-            _LOGGER.warning(
-                f"\n"
-                f"═══════════════════════════════════════════════════════════\n"
-                f"⚠️  Target-ID '{current_id}' kann NICHT geändert werden!\n"
-                f"═══════════════════════════════════════════════════════════\n"
-                f"\n"
-                f"Um Entity-IDs zu ändern:\n"
-                f"1. Settings → Devices & Services → Entities\n"
-                f"2. Suche nach: pico_110_{current_id.replace('/', '_')}\n"
-                f"3. Click Entity → Zahnrad-Symbol → 'Entity ID' ändern\n"
-                f"4. Wiederhole für alle Entities (Light, Switches, Sensors, Buttons)\n"
-                f"\n"
-                f"═══════════════════════════════════════════════════════════\n"
+            # Log info: target ID cannot be changed via config flow
+            _LOGGER.info(
+                "Editing target '%s': ID cannot be changed here. "
+                "To rename entity IDs go to Settings → Devices & Services → Entities.",
+                current_id,
             )
         else:
             # When adding: Allow ID input
@@ -325,8 +317,8 @@ class PicoOptionsFlow(config_entries.OptionsFlow):
             CONF_TARGET_SPACE,
             default=defaults.get(CONF_TARGET_SPACE, SPACE_TC)
         )] = vol.In({
-            SPACE_TC: "Tunable White (mit Kelvin-Steuerung)",
-            SPACE_BRIGHTNESS: "Brightness Only (Kelvin-Felder unten ignorieren)",
+            SPACE_TC: "Tunable White (with Kelvin control)",
+            SPACE_BRIGHTNESS: "Brightness only (Kelvin fields ignored)",
         })
         schema_dict[vol.Required(
             CONF_STATE_TOPIC, 

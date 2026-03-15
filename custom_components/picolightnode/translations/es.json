@@ -1,0 +1,75 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "PICOlightnode",
+        "data": {
+          "name": "Nombre",
+          "device_id": "ID del dispositivo"
+        }
+      },
+      "target": {
+        "title": "Añadir destino",
+        "data": {
+          "name": "Nombre del destino",
+          "id": "ID del destino (dejar vacío para generar automáticamente)",
+          "target_space": "Espacio de color",
+          "state_topic": "Topic de estado",
+          "manual_override_topic": "Topic de control manual",
+          "automation_override_topic": "Topic de control automático",
+          "min_kelvin": "Kelvin mínimo",
+          "max_kelvin": "Kelvin máximo"
+        }
+      },
+      "add_more": {
+        "title": "¿Añadir otro destino?",
+        "data": {
+          "add_more": "Continuar"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "menu": {
+        "title": "Gestionar destinos",
+        "description": "Destinos configurados: {targets}",
+        "data": {
+          "menu": "Acción"
+        }
+      },
+      "target": {
+        "title": "Configurar destino",
+        "data": {
+          "name": "Nombre del destino",
+          "id": "ID del destino (dejar vacío para mantener actual)",
+          "target_space": "Espacio de color",
+          "state_topic": "Topic de estado",
+          "manual_override_topic": "Topic de control manual",
+          "automation_override_topic": "Topic de control automático",
+          "min_kelvin": "Kelvin mínimo",
+          "max_kelvin": "Kelvin máximo"
+        }
+      },
+      "pick_target_edit": {
+        "title": "Seleccionar destino a editar",
+        "data": {
+          "target": "Destino"
+        }
+      },
+      "pick_target_remove": {
+        "title": "Seleccionar destino a eliminar",
+        "data": {
+          "target": "Destino"
+        }
+      },
+      "remove_confirm": {
+        "title": "Confirmar eliminación",
+        "description": "¿Eliminar el destino \"{target_name}\"? Se eliminarán todas las entidades asociadas.",
+        "data": {
+          "confirm": "Sí, eliminar este destino"
+        }
+      }
+    }
+  }
+}

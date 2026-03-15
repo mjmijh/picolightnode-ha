@@ -82,7 +82,7 @@ class PicoResetManualOverrideButton(_BasePicoTargetButton):
         """Initialize reset manual override button."""
         super().__init__(hass, entry, entry_id, device_id, device_name, target)
         self._attr_unique_id = f"{entry_id}::{self._target_id}::reset_manual"
-        self._attr_name = f"{target.get('name', self._target_id)} – Manual Override zurücksetzen"
+        self._attr_name = f"{target.get('name', self._target_id)} – Reset manual override"
 
     async def async_press(self) -> None:
         """Handle button press - reset manual override."""
@@ -140,7 +140,7 @@ class PicoResetAutomationOverrideButton(_BasePicoTargetButton):
         """Initialize reset automation override button."""
         super().__init__(hass, entry, entry_id, device_id, device_name, target)
         self._attr_unique_id = f"{entry_id}::{self._target_id}::reset_automation"
-        self._attr_name = f"{target.get('name', self._target_id)} – Automation Override zurücksetzen"
+        self._attr_name = f"{target.get('name', self._target_id)} – Reset automation override"
 
     async def async_press(self) -> None:
         """Handle button press - reset automation override."""
@@ -196,7 +196,7 @@ class PicoResetAllOverridesButton(_BasePicoTargetButton):
         """Initialize reset all overrides button."""
         super().__init__(hass, entry, entry_id, device_id, device_name, target)
         self._attr_unique_id = f"{entry_id}::{self._target_id}::reset_all"
-        self._attr_name = f"{target.get('name', self._target_id)} – Alle Overrides zurücksetzen"
+        self._attr_name = f"{target.get('name', self._target_id)} – Reset all overrides"
 
     async def async_press(self) -> None:
         """Handle button press - reset ALL overrides."""

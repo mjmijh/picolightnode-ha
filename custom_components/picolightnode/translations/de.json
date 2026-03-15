@@ -5,7 +5,7 @@
         "title": "PICOlightnode",
         "data": {
           "name": "Name",
-          "device_id": "Device-ID"
+          "device_id": "Geräte-ID"
         }
       },
       "target": {
@@ -13,18 +13,61 @@
         "data": {
           "name": "Target-Name",
           "id": "Target-ID (leer lassen = automatisch)",
+          "target_space": "Farbraum",
           "state_topic": "State-Topic",
-          "override_topic": "Override-Topic",
-          "min_kelvin": "Min. Kelvin",
-          "max_kelvin": "Max. Kelvin",
           "manual_override_topic": "Override-Topic (manuell)",
-          "automation_override_topic": "Override-Topic (Automation)"
+          "automation_override_topic": "Override-Topic (Automation)",
+          "min_kelvin": "Min. Kelvin",
+          "max_kelvin": "Max. Kelvin"
         }
       },
-      "menu": {
-        "title": "Targets",
+      "add_more": {
+        "title": "Weiteren Target hinzufügen?",
         "data": {
-          "menu": "Nächster Schritt"
+          "add_more": "Weiter"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "menu": {
+        "title": "Targets verwalten",
+        "description": "Konfigurierte Targets: {targets}",
+        "data": {
+          "menu": "Aktion"
+        }
+      },
+      "target": {
+        "title": "Target konfigurieren",
+        "data": {
+          "name": "Target-Name",
+          "id": "Target-ID (leer lassen = unverändert)",
+          "target_space": "Farbraum",
+          "state_topic": "State-Topic",
+          "manual_override_topic": "Override-Topic (manuell)",
+          "automation_override_topic": "Override-Topic (Automation)",
+          "min_kelvin": "Min. Kelvin",
+          "max_kelvin": "Max. Kelvin"
+        }
+      },
+      "pick_target_edit": {
+        "title": "Target zum Bearbeiten auswählen",
+        "data": {
+          "target": "Target"
+        }
+      },
+      "pick_target_remove": {
+        "title": "Target zum Entfernen auswählen",
+        "data": {
+          "target": "Target"
+        }
+      },
+      "remove_confirm": {
+        "title": "Entfernen bestätigen",
+        "description": "Target \"{target_name}\" entfernen? Alle zugehörigen Entitäten werden gelöscht.",
+        "data": {
+          "confirm": "Ja, diesen Target entfernen"
         }
       }
     }

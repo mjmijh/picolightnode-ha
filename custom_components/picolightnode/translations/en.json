@@ -13,18 +13,61 @@
         "data": {
           "name": "Target name",
           "id": "Target ID (leave empty to auto-generate)",
+          "target_space": "Color space",
           "state_topic": "State topic",
-          "override_topic": "Override topic",
-          "min_kelvin": "Min Kelvin",
-          "max_kelvin": "Max Kelvin",
           "manual_override_topic": "Manual override topic",
-          "automation_override_topic": "Automation override topic"
+          "automation_override_topic": "Automation override topic",
+          "min_kelvin": "Min Kelvin",
+          "max_kelvin": "Max Kelvin"
         }
       },
-      "menu": {
-        "title": "Targets",
+      "add_more": {
+        "title": "Add another target?",
         "data": {
-          "menu": "Next step"
+          "add_more": "Continue"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "menu": {
+        "title": "Manage targets",
+        "description": "Configured targets: {targets}",
+        "data": {
+          "menu": "Action"
+        }
+      },
+      "target": {
+        "title": "Target configuration",
+        "data": {
+          "name": "Target name",
+          "id": "Target ID (leave empty to keep current)",
+          "target_space": "Color space",
+          "state_topic": "State topic",
+          "manual_override_topic": "Manual override topic",
+          "automation_override_topic": "Automation override topic",
+          "min_kelvin": "Min Kelvin",
+          "max_kelvin": "Max Kelvin"
+        }
+      },
+      "pick_target_edit": {
+        "title": "Select target to edit",
+        "data": {
+          "target": "Target"
+        }
+      },
+      "pick_target_remove": {
+        "title": "Select target to remove",
+        "data": {
+          "target": "Target"
+        }
+      },
+      "remove_confirm": {
+        "title": "Confirm removal",
+        "description": "Remove target \"{target_name}\"? This will delete all associated entities.",
+        "data": {
+          "confirm": "Yes, remove this target"
         }
       }
     }
