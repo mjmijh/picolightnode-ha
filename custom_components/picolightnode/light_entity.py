@@ -428,13 +428,7 @@ class PicoLight(
         
         # Clear saved mode
         self._mode_before_off = None
-        
-        # Disable Follow External
-        if self._follow_external:
-            self._follow_external = False
-            self._sync_state_to_coordinator()
-            self.coordinator.async_set_updated_data(self.coordinator.data)
-        
+
         # Send manual override
         point = merge_point(st, brightness, temp_k, transition, self._target_space)
         st.last_sent_point = point
