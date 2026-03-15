@@ -319,46 +319,29 @@ class PicoLight(
         mode = self._mode_before_off
         
         if mode == "follow":
-            # Re-enable Follow External
-            self._follow_external = True
-            self._sync_state_to_coordinator()
-            
-            # Get saved brightness or use 100% as fallback
+            # Follow mode is NOT auto-restored on turn-on.
+            # The user must explicitly enable the Follow External switch to resume automation.
+            # Reason: auto-restore runs in user context (user_id set), which causes KFS
+            # Manual Override Detection to immediately turn off the Follow External switch again.
+            # Instead, turn on with saved brightness in manual mode.
             restore_b = self._brightness_before_off or 255
             restore_t = self._temperature_before_off
-            
-            # Create point with saved brightness as initial value
-            point = merge_point(st, restore_b, restore_t, 0.0, self._target_space)
+
+            point = merge_point(st, restore_b, restore_t, 3.0, self._target_space)
             st.last_sent_point = point
             st.point = point  # Immediate UI update
 
-            # Release manual override (no point needed)
             await publish_override_point(
-                self._mqtt, self._manual_override_topic, point=None,
-                enabled=False, space=self._target_space
+                self._mqtt, self._manual_override_topic, point,
+                enabled=True, space=self._target_space
             )
-            self._manual_override_enabled = False
-            st.manual_override_enabled = False
 
-            # Enable automation override WITH saved brightness as initial value
-            # External automation (Keyframe Scheduler, Adaptive Lighting) will override shortly
-            automation_topic = self._target.get(CONF_AUTOMATION_OVERRIDE_TOPIC)
-            if automation_topic:
-                await publish_override_point(
-                    self._mqtt, automation_topic, point,
-                    enabled=True, space=self._target_space
-                )
-                self._automation_override_enabled = True
-                st.automation_override_enabled = True
-            
-            # Notify coordinator to update switch state
-            self.coordinator.async_set_updated_data(self.coordinator.data)
-            
-            self.async_write_ha_state()
-            
+            self._manual_override_enabled = True
+            st.manual_override_enabled = True
+
             _LOGGER.info(
-                f"{self.entity_id}: Restored Follow External mode "
-                f"(follow_external={self._follow_external}, initial brightness={restore_b})"
+                f"{self.entity_id}: Turned on (was follow mode) - manual control "
+                f"(b={restore_b}, t={restore_t}). Enable Follow External switch to resume automation."
             )
             
         elif mode == "device":

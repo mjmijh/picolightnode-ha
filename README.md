@@ -72,8 +72,15 @@ Der PICO unterstützt drei verschiedene Steuerungsmodi. Du kannst zwischen ihnen
 
 **Smart Restore:**
 - Ausschalten → merkt sich "follow" mode + brightness
-- Einschalten → Startet mit gespeicherter Helligkeit
-             → Keyframe übernimmt nach 1-2 Sekunden
+- Einschalten → Startet mit gespeicherter Helligkeit im **Manual Mode**
+             → Follow External Switch bleibt **AUS**
+             → Zum Reaktivieren: Follow External Switch manuell einschalten (siehe Dashboard-Empfehlung unten)
+
+**⚠️ Warum kein automatisches Follow-Restore?**
+Ein automatisches Wiederherstellen des Follow-Modus beim Einschalten würde im HA-User-Kontext ablaufen. Externe Automations (z.B. Keyframe Scheduler) mit Manual Override Detection würden den Follow-Switch sofort wieder deaktivieren. Das Verhalten ist daher unabhängig von der verwendeten Automation immer konsistent.
+
+**📋 Dashboard-Empfehlung:**
+Füge den Follow External Switch als Karte im Dashboard hinzu (z.B. mit Label "Automatik AN"). So kann der User nach dem manuellen Einschalten mit einem Klick zur externen Automation zurückkehren.
 
 **⚠️ Wichtig:** Follow External nur aktivieren wenn eine Automation tatsächlich läuft! Sonst bleibt das Licht beim gespeicherten Wert und reagiert nicht auf manuelle Änderungen.
 
@@ -319,10 +326,11 @@ Publiziert den Lichtzustand auf ein MQTT-Topic. `assignments` legt fest, welche 
 - Ermöglicht Blueprints zu unterscheiden zwischen User Actions und Integration Logic
 - **Wichtig für Keyframe Scheduler Blueprint Manual Override Detection**
 
-### ✅ Smart Restore verbessert
-- Follow External Restore sendet gespeicherten brightness als Initialwert
-- Smooth Übergang zur External Automation
-- Kein "schwarzer Moment" mehr beim Einschalten
+### ✅ Smart Restore überarbeitet
+- Follow-Mode wird beim Einschalten **nicht** automatisch wiederhergestellt
+- Einschalten aus Follow-Mode → Manual Mode mit gespeicherter Helligkeit
+- Verhindert Konflikte mit Manual Override Detection in externen Automations (z.B. Keyframe Scheduler)
+- Follow External Switch im Dashboard als "Automatik AN" empfohlen
 
 ### ✅ CONF_AUTOMATION_OVERRIDE_TOPIC Fix
 - Behebt Bug wo automation_override_topic nicht gefunden wurde
@@ -354,7 +362,7 @@ User kann Automation erstellen:
 
 | Vor Turn-Off | Nach Turn-On |
 |--------------|--------------|
-| Follow External AN | Follow External AN ✅ |
+| Follow External AN | **Manual (b=gespeichert)** — Follow External muss danach manuell aktiviert werden |
 | Internal Auto | Internal Auto ✅ |
 | Manual (b=64) | Manual (b=64) ✅ |
 
@@ -379,9 +387,9 @@ User kann Automation erstellen:
 {"enabled": false, "point": {"space": "TC", "brightness": 1.0, "temperature": 3500, "fade": 0}}
 ```
 
-### Smart Turn-On (Follow Mode)
+### Turn-On aus Follow Mode (Manual Fallback)
 ```json
-// Automation Override Topic
+// Manual Override Topic — Follow External wird NICHT automatisch wiederhergestellt
 {"enabled": true, "point": {"space": "TC", "brightness": 0.5, "temperature": 4000, "fade": 3.0}}
 ```
 
