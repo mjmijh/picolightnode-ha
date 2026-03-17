@@ -38,6 +38,12 @@ from .services import brightness_01_to_ha, merge_point, publish_override_point
 
 _LOGGER = logging.getLogger(__name__)
 
+# Pico firmware minimum brightness = 1/255 ≈ 0.004 (0.4%).
+# When we commanded off (last_sent_point.brightness_01 == 0) and the device
+# reports a value below this threshold, treat it as "off" instead of "on at 0.4%".
+# This prevents the toggle button from flipping back to "on" after turn_off.
+_OFF_THRESHOLD_01 = 1.5 / 255  # ~0.6% — just above Pico's minimum non-zero value
+
 
 class PicoLight(
     CoordinatorEntity[PicoCoordinator], 
@@ -222,7 +228,7 @@ class PicoLight(
     def is_on(self) -> bool:
         """Return true if light is on."""
         st = self._state()
-        
+
         if st.point is not None:
             b = st.point.brightness_01
         elif st.last_sent_point is not None:
@@ -231,8 +237,16 @@ class PicoLight(
             b = st.last_brightness_01
         else:
             return False
-        
-        return b > 0.0
+
+        if b <= 0.0:
+            return False
+
+        # Pico may report its minimum brightness (1/255 ≈ 0.4%) right after a turn_off
+        # command instead of 0. If we commanded off, treat near-zero device feedback as off.
+        if b < _OFF_THRESHOLD_01 and st.last_sent_point is not None and st.last_sent_point.brightness_01 == 0.0:
+            return False
+
+        return True
 
     @property
     def brightness(self) -> int | None:
