@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from typing import Any
 
 from homeassistant.core import HomeAssistant
@@ -151,9 +152,18 @@ class PicoCoordinator(DataUpdateCoordinator[dict[str, PicoTargetState]]):
 
                     b01, temp_k, fade_s = _extract_fields(payload)
 
+                    # Echo suppression: skip update if a command was sent very recently.
+                    # Prevents MQTT echo / retained messages / fade-states from overwriting
+                    # the optimistic st.point right after turn_on / turn_off.
+                    if time.monotonic() < st.suppress_mqtt_state_until:
+                        _LOGGER.debug(
+                            "Suppressing MQTT echo for %s (suppress window active)", _tid
+                        )
+                        return
+
                     _LOGGER.debug("PICO state msg (%s): %s", _topic, payload)
                     _LOGGER.debug(
-                        "Parsed fields for %s: b01=%s temp_k=%s fade_s=%s", 
+                        "Parsed fields for %s: b01=%s temp_k=%s fade_s=%s",
                         _tid, b01, temp_k, fade_s
                     )
 

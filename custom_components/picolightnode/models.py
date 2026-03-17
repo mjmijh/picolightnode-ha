@@ -42,3 +42,8 @@ class PicoTargetState:
     # This allows restoring automation when turning back on
     mode_before_manual_off: Optional[str] = None  # "internal_auto", "external_auto", or None
     point_before_manual_off: Optional[PicoPointTC] = None  # Last point before manual off
+
+    # Echo suppression: ignore incoming MQTT state updates until this monotonic timestamp.
+    # Set after sending turn_on / turn_off to prevent MQTT echo / fade-state from overwriting
+    # the optimistic st.point (e.g. retained 0.4% arriving right after commanded off).
+    suppress_mqtt_state_until: float = 0.0

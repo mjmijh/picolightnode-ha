@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any
 
 from homeassistant.components.light import (
@@ -37,6 +38,10 @@ from .mqtt_client import PicoMqtt
 from .services import brightness_01_to_ha, merge_point, publish_override_point
 
 _LOGGER = logging.getLogger(__name__)
+
+# Seconds to suppress incoming MQTT state after a command is sent.
+# Prevents echo / retained-message / fade-state from overwriting the optimistic st.point.
+_ECHO_SUPPRESS_S = 2.5
 
 
 class PicoLight(
@@ -330,6 +335,7 @@ class PicoLight(
             point = merge_point(st, restore_b, restore_t, 3.0, self._target_space)
             st.last_sent_point = point
             st.point = point  # Immediate UI update
+            st.suppress_mqtt_state_until = time.monotonic() + _ECHO_SUPPRESS_S
 
             await publish_override_point(
                 self._mqtt, self._manual_override_topic, point,
@@ -379,15 +385,16 @@ class PicoLight(
             point = merge_point(st, restore_b, restore_t, 3.0, self._target_space)
             st.last_sent_point = point
             st.point = point  # Immediate UI update
-            
+            st.suppress_mqtt_state_until = time.monotonic() + _ECHO_SUPPRESS_S
+
             await publish_override_point(
                 self._mqtt, self._manual_override_topic, point,
                 enabled=True, space=self._target_space
             )
-            
+
             self._manual_override_enabled = True
             st.manual_override_enabled = True
-            
+
             _LOGGER.info(f"{self.entity_id}: Restored Manual mode")
         
         # Clear saved mode
@@ -416,7 +423,8 @@ class PicoLight(
         point = merge_point(st, brightness, temp_k, transition, self._target_space)
         st.last_sent_point = point
         st.point = point  # Immediate UI update
-        
+        st.suppress_mqtt_state_until = time.monotonic() + _ECHO_SUPPRESS_S
+
         await publish_override_point(
             self._mqtt, self._manual_override_topic, point,
             enabled=True, space=self._target_space
@@ -455,7 +463,8 @@ class PicoLight(
         point = merge_point(st, 0, None, transition, self._target_space)
         st.last_sent_point = point
         st.point = point  # Immediate UI update
-        
+        st.suppress_mqtt_state_until = time.monotonic() + _ECHO_SUPPRESS_S
+
         await publish_override_point(
             self._mqtt, self._manual_override_topic, point,
             enabled=True, space=self._target_space
