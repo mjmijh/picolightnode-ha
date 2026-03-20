@@ -1,9 +1,8 @@
-# PICOlightnode v2.0.19
+# PICOlightnode
 
-Integracion personalizada de Home Assistant para hardware de iluminacion PICO controlado mediante MQTT. El dispositivo PICO gestiona la iluminacion DALI y expone sus objetivos a traves de MQTT.
+Integración personalizada de Home Assistant para hardware de iluminación PICO controlado mediante MQTT. El dispositivo PICO gestiona la iluminación DALI y expone sus objetivos a través de MQTT.
 
-- [README (English)](README.md)
-- [README (Deutsch)](README.de.md)
+> Also available in [English](README.md) | Auch verfügbar auf [Deutsch](README.de.md)
 
 ---
 
@@ -14,31 +13,31 @@ Integracion personalizada de Home Assistant para hardware de iluminacion PICO co
 
 ---
 
-## Instalacion
+## Instalación
 
 **Manual:**
 
 ```bash
 cd /config
-unzip -o picolightnode_v2.0.19.zip
+unzip -o picolightnode_v2.0.20.zip
 ha core restart
 ```
 
 **HACS (repositorio personalizado):**
 
-Agregar `https://github.com/mjmijh/picolightnode-ha` como repositorio personalizado en HACS, instalar la integracion y reiniciar Home Assistant.
+Añadir `https://github.com/mjmijh/picolightnode-ha` como repositorio personalizado en HACS, instalar la integración y reiniciar Home Assistant.
 
 ---
 
-## Modos de automatizacion
+## Modos de automatización
 
-PICOlightnode admite tres modos de operacion. Puedes cambiar entre ellos en cualquier momento.
+PICOlightnode admite tres modos de operación. Puedes cambiar entre ellos en cualquier momento.
 
 ### Modo 1: Control manual
 
 Control directo desde el panel de Home Assistant.
 
-- No requiere configuracion especial
+- No requiere configuración especial
 - Interruptor Follow External: **APAGADO**
 - Smart Restore recuerda el brillo y la temperatura de color al siguiente encendido
 
@@ -46,38 +45,38 @@ Control directo desde el panel de Home Assistant.
 
 ---
 
-### Modo 2: Automatizacion interna (PICO Daily Scheduler)
+### Modo 2: Automatización interna (PICO Daily Scheduler)
 
-El dispositivo PICO se controla a si mismo segun un horario diario configurado en `setup.json`. No se necesitan automatizaciones en Home Assistant.
+El dispositivo PICO se controla a sí mismo según un horario diario configurado en `setup.json`. No se necesitan automatizaciones en Home Assistant.
 
 - Interruptor Follow External: **APAGADO**
-- Funciona incluso cuando Home Assistant esta desconectado
-- Smart Restore: al apagar guarda el modo "device" — al encender reanuda el planificador PICO
+- Funciona incluso cuando Home Assistant está desconectado
+- Smart Restore: al apagar guarda el modo «device» — al encender reanuda el planificador PICO
 
-**Ideal para:** Control basado en horarios simples, operacion autonoma
+**Ideal para:** Control basado en horarios simples, operación autónoma
 
 ---
 
-### Modo 3: Automatizacion externa (Follow External)
+### Modo 3: Automatización externa (Follow External)
 
-Una automatizacion externa (p. ej. Keyframe Scheduler) controla la luz. PICOlightnode sigue los comandos de la automatizacion y detecta anulaciones manuales.
+Una automatización externa (p. ej. Keyframe Scheduler) controla la luz. PICOlightnode sigue los comandos de la automatización y detecta anulaciones manuales.
 
 - Interruptor Follow External: **ENCENDIDO**
-- Al detectar una anulacion manual, el interruptor Follow External se desactiva automaticamente
-- Smart Restore tras apagar desde el modo Follow: reanuda en modo manual con el brillo guardado — el modo Follow no se restaura automaticamente de forma intencionada, para evitar conflictos con la deteccion de anulaciones en automatizaciones externas
+- Al detectar una anulación manual, el interruptor Follow External se desactiva automáticamente
+- Smart Restore tras apagar desde el modo Follow: reanuda en modo manual con el brillo guardado — el modo Follow no se restaura automáticamente de forma intencionada, para evitar conflictos con la detección de anulaciones en automatizaciones externas
 
-**Ideal para:** Horarios complejos, ajustes basados en sensores, sincronizacion de multiples luces
+**Ideal para:** Horarios complejos, ajustes basados en sensores, sincronización de múltiples luces
 
 ---
 
 ### Cambio entre modos
 
-| Desde | Hacia | Como |
+| Desde | Hacia | Cómo |
 |-------|-------|------|
 | Manual | Follow External | Activar interruptor Follow External |
-| Follow External | Manual | Cambiar el brillo en el panel — Follow se desactiva automaticamente |
+| Follow External | Manual | Cambiar el brillo en el panel — Follow se desactiva automáticamente |
 | Follow External | Manual | Desactivar interruptor Follow External |
-| Cualquiera | Automatizacion interna | Pulsar el boton **Restablecer todas las anulaciones** |
+| Cualquiera | Automatización interna | Pulsar el botón **Restablecer todas las anulaciones** |
 
 ---
 
@@ -85,47 +84,67 @@ Una automatizacion externa (p. ej. Keyframe Scheduler) controla la luz. PICOligh
 
 Por cada objetivo configurado se crean las siguientes entidades:
 
-| Entidad | Patron de ID | Descripcion |
+| Entidad | Patrón de ID | Descripción |
 |---------|--------------|-------------|
 | Luz | `light.<target_name>` | Entidad de luz principal — brillo y temperatura de color (modo TC) |
 | Interruptor | `switch.<target_name>_externe_automation_zulassen` | Interruptor Follow External |
-| Boton | — | Restablecer anulacion manual |
-| Boton | — | Restablecer anulacion de automatizacion |
-| Boton | — | Restablecer todas las anulaciones (vuelve al modo de automatizacion interna) |
+| Botón | — | Restablecer anulación manual |
+| Botón | — | Restablecer anulación de automatización |
+| Botón | — | Restablecer todas las anulaciones (vuelve al modo de automatización interna) |
 
 ### Atributos de la entidad de luz
 
-| Atributo | Valores | Descripcion |
+| Atributo | Valores | Descripción |
 |----------|---------|-------------|
-| `follow_external_automation` | `true` / `false` | Indica si el modo Follow External esta activo |
+| `follow_external_automation` | `true` / `false` | Indica si el modo Follow External está activo |
 | `mode_before_off` | `follow` / `device` / `manual` | Modo que estaba activo antes de apagar la luz |
 
 ---
 
 ## Topics MQTT
 
-| Topic | Direccion | Descripcion |
+| Topic | Dirección | Descripción |
 |-------|-----------|-------------|
-| `<base_topic>/state` | Dispositivo → HA | El dispositivo publica el estado actual (brillo, cct) |
-| `<base_topic>/override/manual` | HA → Dispositivo | La integracion envia comandos de anulacion manual |
-| `<base_topic>/override/automation` | HA → Dispositivo | La integracion envia comandos de anulacion de automatizacion |
+| `<base_topic>/state` | Dispositivo → HA | El dispositivo publica el estado actual (brillo, CCT) |
+| `<base_topic>/override/manual` | HA → Dispositivo | La integración envía comandos de anulación manual |
+| `<base_topic>/override/automation` | HA → Dispositivo | La integración envía comandos de anulación de automatización |
 
 ---
 
-## Configuracion setup.json del PICO
+## Configuración setup.json del PICO
 
-El archivo `setup.json` define que canales de luz (targets) crea el PICO, como se comportan y a donde se envian los valores calculados (bus DALI, MQTT, HTTP).
+El archivo `setup.json` define qué canales de luz (targets) crea el PICO, cómo se comportan y a dónde se envían los valores calculados (bus DALI, MQTT, HTTP).
 
 ### Tipos de dispositivos DALI
 
-| Tipo | Descripcion |
+| Tipo | Descripción |
 |------|-------------|
-| **DT8** | Tunable White nativo — una sola direccion DALI, CCT enviado de forma nativa mediante `DT8TC` |
-| **DT6** | DALI estandar — CCT producido mezclando dos canales DAPC independientes (blanco calido + blanco frio) |
+| **DT8** | Tunable White nativo — una sola dirección DALI, CCT enviado de forma nativa mediante `DT8TC` |
+| **DT6** | DALI estándar — CCT producido mezclando dos canales DAPC independientes (blanco cálido + blanco frío) |
 
-Usar **DT8** cuando el balasto implemente completamente DALI Device Type 8. Usar **DT6** para todos los demas balastos CCT.
+Usar **DT8** cuando el balasto implemente completamente DALI Device Type 8. Usar **DT6** para todos los demás balastos CCT.
 
 Las configuraciones de ejemplo para ambos tipos se encuentran en [`docs/examples/setup/`](docs/examples/setup/).
+
+### DT8 — Vista Blockly
+
+**Target CCT** (espacio TC, asignación DT8TC):
+
+![DT8 CCT Target](docs/examples/setup/img/dali_dt8_cct_blockly.png)
+
+**Target de brillo** (espacio Brightness, asignación DAPC):
+
+![DT8 Target de brillo](docs/examples/setup/img/dali_dt8_bri_blockly.png)
+
+### DT6 — Vista Blockly
+
+**Target CCT** (espacio TC, conversión TCBLEND + 2× DAPC):
+
+![DT6 CCT Target](docs/examples/setup/img/dali_dt6_cct_blockly.png)
+
+**Target de brillo** (espacio Brightness, asignación DAPC):
+
+![DT6 Target de brillo](docs/examples/setup/img/dali_dt6_bri_blockly.png)
 
 ### Estructura
 
@@ -141,21 +160,21 @@ Un archivo `setup.json` es un array JSON de **Targets**. Cada target representa 
 }
 ```
 
-**Behaviors** determinan el valor de luz. La integracion utiliza dos behaviors de anulacion por target — uno para control de automatizacion (`/override/automation`) y otro para control manual (`/override/manual`).
+**Behaviors** determinan el valor de luz. La integración utiliza dos behaviors de anulación por target — uno para control de automatización (`/override/automation`) y otro para control manual (`/override/manual`).
 
-**Destinations** determinan a donde se envia el valor calculado: `DALI` (salida al bus), `MESSAGING` (publicacion de estado MQTT), `HTTPSERVER` (consulta de estado HTTP).
+**Destinations** determinan a dónde se envía el valor calculado: `DALI` (salida al bus), `MESSAGING` (publicación de estado MQTT), `HTTPSERVER` (consulta de estado HTTP).
 
 ---
 
 ## Seguimiento de contexto
 
-Todos los cambios de estado realizados internamente por la integracion llevan el Context ID `picolightnode_internal`. Esto permite que blueprints externos (p. ej. Keyframe Scheduler) distingan entre acciones iniciadas por el usuario y actualizaciones internas de la integracion, lo que posibilita una deteccion fiable de anulaciones manuales.
+Todos los cambios de estado realizados internamente por la integración llevan el Context ID `picolightnode_internal`. Esto permite que blueprints externos (p. ej. Keyframe Scheduler) distingan entre acciones iniciadas por el usuario y actualizaciones internas de la integración, lo que posibilita una detección fiable de anulaciones manuales.
 
 ---
 
 ## Integraciones relacionadas
 
-| Integracion | Repositorio |
+| Integración | Repositorio |
 |-------------|-------------|
 | Keyframe Scheduler | https://github.com/mjmijh/keyframe-scheduler |
 | CCT Astronomy | https://github.com/mjmijh/cct-astronomy |
