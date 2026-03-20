@@ -30,6 +30,8 @@ class PicoFollowExternalSwitch(
     
     Uses RestoreEntity to persist state across HA restarts.
     """
+
+    _attr_icon = "mdi:link-variant"
     
     def __init__(
         self,

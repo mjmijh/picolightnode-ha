@@ -34,7 +34,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 entry_id=entry.entry_id,
                 device_id=device_id,
                 device_name=device_name,
-                name=f"{t.get('name', target_id)} – Follow external automation",
+                name=f"{t.get('name', target_id)} – Sync external automation",
                 unique_id=f"{device_id}::{target_id}::follow_external",
                 target_id=target_id,
                 target_name=t.get('name', target_id),

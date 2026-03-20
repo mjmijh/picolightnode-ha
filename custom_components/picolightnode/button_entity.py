@@ -68,7 +68,7 @@ class PicoResetManualOverrideButton(_BasePicoTargetButton):
     - If automation_override=false → Use internal automation
     """
     
-    _attr_icon = "mdi:hand-back-left-off"
+    _attr_icon = "mdi:restore"
 
     def __init__(
         self, 
@@ -126,7 +126,7 @@ class PicoResetAutomationOverrideButton(_BasePicoTargetButton):
     - If manual_override=false → Use internal automation
     """
     
-    _attr_icon = "mdi:auto-mode"
+    _attr_icon = "mdi:restore"
 
     def __init__(
         self, 
@@ -182,7 +182,7 @@ class PicoResetAllOverridesButton(_BasePicoTargetButton):
     GUARANTEED to activate PICO internal automation
     """
     
-    _attr_icon = "mdi:restart"
+    _attr_icon = "mdi:restore"
 
     def __init__(
         self, 

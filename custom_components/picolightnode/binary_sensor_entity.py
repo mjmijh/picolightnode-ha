@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.const import EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
@@ -9,6 +10,7 @@ from .coordinator import PicoCoordinator
 
 class _BasePicoBinary(CoordinatorEntity[PicoCoordinator], BinarySensorEntity):
     _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(
         self,
