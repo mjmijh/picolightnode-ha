@@ -88,6 +88,10 @@ Each configured target creates the following entities:
 |--------|------------|-------------|
 | Light | `light.<target_name>` | Main light entity — brightness and colour temp (TC mode) |
 | Switch | `switch.<target_name>_externe_automation_zulassen` | Follow External switch |
+| Sensor | `sensor.<target_name>_dim` | Current brightness in % (0–100) |
+| Sensor | `sensor.<target_name>_cct` | Current colour temperature in Kelvin |
+| Binary sensor | `binary_sensor.<target_name>_manual_override_active` | Manual override currently active |
+| Binary sensor | `binary_sensor.<target_name>_automation_override_active` | Automation override currently active |
 | Button | — | Reset manual override |
 | Button | — | Reset automation override |
 | Button | — | Reset all overrides (returns to Internal Auto mode) |
