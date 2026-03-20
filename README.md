@@ -1,430 +1,167 @@
-# PICOlightnode v2.0.18
+# PICOlightnode v2.0.19
 
-Home Assistant Custom Integration für PICO Lighting Hardware mit MQTT-Steuerung.
+Home Assistant custom integration for PICO lighting hardware controlled via MQTT. The PICO device manages DALI lighting and exposes its targets over MQTT.
 
----
-
-## 📚 How To Use - Die drei Automationsebenen
-
-Der PICO unterstützt drei verschiedene Steuerungsmodi. Du kannst zwischen ihnen wechseln je nach Bedarf.
-
-### 🔵 **Mode 1: Manual Control (Manuelle Steuerung)**
-
-**Wann nutzen?** Wenn du das Licht direkt im Dashboard steuern möchtest.
-
-**Setup:**
-- Keine spezielle Konfiguration nötig
-- Follow External Switch: **OFF**
-
-**Verwendung:**
-```
-1. Licht im Dashboard ein/ausschalten
-2. Helligkeit/Farbtemperatur nach Bedarf ändern
-3. Smart Restore merkt sich deine Einstellungen beim nächsten Einschalten
-```
-
-**Best for:** Ad-hoc Anpassungen, volle manuelle Kontrolle
+- [README (Deutsch)](README.de.md)
+- [README (Espanol)](README.es.md)
 
 ---
 
-### 🟢 **Mode 2: Internal Automation (PICO Daily Scheduler)**
+## Requirements
 
-**Wann nutzen?** Wenn der PICO seine eingebaute Automatisierung nutzen soll.
+- Home Assistant 2024.1.0 or later
+- PICO hardware with MQTT
 
-**Setup:**
-1. Konfiguriere Daily Scheduler im PICO (via `setup.json`)
-2. Keine HA Automations nötig
-3. Follow External Switch: **OFF**
+---
 
-**Verwendung:**
-```
-1. PICO steuert sich selbst basierend auf Tageszeit
-2. Funktioniert auch wenn HA offline ist
-3. User kann jederzeit manuell übernehmen
-4. Beim nächsten Einschalten übernimmt PICO wieder
+## Installation
+
+**Manual:**
+
+```bash
+cd /config
+unzip -o picolightnode_v2.0.19.zip
+ha core restart
 ```
 
-**Smart Restore:**
-- Ausschalten → merkt sich "device" mode
-- Einschalten → PICO Daily Scheduler übernimmt wieder
+**HACS (custom repository):**
 
-**Best for:** Einfache Tageszeit-Steuerung, Standalone-Betrieb
+Add `https://github.com/mjmijh/picolightnode-ha` as a custom repository in HACS, then install the integration and restart Home Assistant.
 
 ---
 
-### 🟡 **Mode 3: External Automation (Follow External)**
+## Automation Modes
 
-**Wann nutzen?** Wenn eine externe Automation (z.B. Keyframe Scheduler) steuern soll.
+PICOlightnode supports three modes of operation. You can switch between them at any time.
 
-**Setup:**
-1. Installiere [Keyframe Scheduler Integration](https://github.com/mjmijh/keyframe_scheduler)
-2. Erstelle Keyframe Scheduler Sensor
-3. Erstelle Automation mit "Keyframe Scheduler Follower" Blueprint
-4. Wähle PICO Light Entity + Follow External Switch
+### Mode 1: Manual Control
 
-**Verwendung:**
-```
-1. Schalte Follow External Switch AN
-2. Keyframe Scheduler sendet kontinuierlich Werte
-3. PICO folgt der externen Automation
-4. User kann jederzeit manuell übernehmen → Follow disabled automatisch
-```
+Direct control via the Home Assistant dashboard.
 
-**Smart Restore:**
-- Ausschalten → merkt sich "follow" mode + brightness
-- Einschalten → Startet mit gespeicherter Helligkeit im **Manual Mode**
-             → Follow External Switch bleibt **AUS**
-             → Zum Reaktivieren: Follow External Switch manuell einschalten (siehe Dashboard-Empfehlung unten)
+- No special setup required
+- Follow External switch: **OFF**
+- Smart Restore remembers brightness and color temperature on the next turn-on
 
-**⚠️ Warum kein automatisches Follow-Restore?**
-Ein automatisches Wiederherstellen des Follow-Modus beim Einschalten würde im HA-User-Kontext ablaufen. Externe Automations (z.B. Keyframe Scheduler) mit Manual Override Detection würden den Follow-Switch sofort wieder deaktivieren. Das Verhalten ist daher unabhängig von der verwendeten Automation immer konsistent.
-
-**📋 Dashboard-Empfehlung:**
-Füge den Follow External Switch als Karte im Dashboard hinzu (z.B. mit Label "Automatik AN"). So kann der User nach dem manuellen Einschalten mit einem Klick zur externen Automation zurückkehren.
-
-**⚠️ Wichtig:** Follow External nur aktivieren wenn eine Automation tatsächlich läuft! Sonst bleibt das Licht beim gespeicherten Wert und reagiert nicht auf manuelle Änderungen.
-
-**Best for:** Komplexe Zeitpläne, Sensor-basierte Anpassungen, Multi-Light Sync
+**Best for:** Ad-hoc adjustments, full manual control
 
 ---
 
-## 🔄 Wechseln zwischen Modi
+### Mode 2: Internal Automation (PICO Daily Scheduler)
 
-**So wechselst du den Modus:**
+The PICO device controls itself based on a time-of-day schedule configured in `setup.json`. No Home Assistant automations are needed.
 
-| Von → Nach | Wie |
-|------------|-----|
-| Manual → Follow External | Follow External Switch **EIN** |
-| Follow External → Manual | Brightness im Dashboard ändern → Follow disabled automatisch |
-| Follow External → Manual | Follow External Switch **AUS** |
-| Beliebig → Internal Auto | "Alle Overrides zurücksetzen" Button klicken |
+- Follow External switch: **OFF**
+- Works even when Home Assistant is offline
+- Smart Restore: turning off saves "device" mode — turning on resumes the PICO scheduler
 
----
-
-## 🎯 Entities Übersicht
-
-### **Light Entity**
-- `light.pico_101_{target_name}`
-- Hauptsteuerung für das Licht
-- Brightness + Color Temp (bei TC mode)
-- **Attributes zeigen aktuellen Mode**:
-  - `follow_external_automation: true/false`
-  - `mode_before_off: follow/device/manual`
-
-### **Follow External Switch**
-- `switch.{target_name}_externe_automation_zulassen`
-- Toggle für External Automation Mode
-- Persistent über HA Neustarts
-
-### **Button Entities**
-- **Manual Override zurücksetzen**: Deaktiviert manuelle Steuerung
-- **Automation Override zurücksetzen**: Deaktiviert External Automation
-- **Alle Overrides zurücksetzen**: → Internal Auto Mode
+**Best for:** Simple time-based control, standalone operation
 
 ---
 
-## 📖 Vollständige Dokumentation
+### Mode 3: External Automation (Follow External)
 
-Für detaillierte Architektur-Informationen und das Zusammenspiel mit Keyframe Scheduler siehe:
+An external automation (e.g. Keyframe Scheduler) controls the light. PICOlightnode tracks commands from the automation and detects manual overrides.
 
-📄 **[PICO_KEYFRAME_CONCEPT.md](docs/PICO_KEYFRAME_CONCEPT.md)**
+- Follow External switch: **ON**
+- When a manual override is detected, the Follow External switch turns off automatically
+- Smart Restore after turn-off from Follow mode: resumes in Manual mode with the saved brightness — Follow mode is intentionally not restored automatically to avoid conflicts with override detection in external automations
 
----
-
-## ⚙️ PICO setup.json Konfiguration
-
-Die `setup.json` ist die zentrale Konfigurationsdatei des PICO-Geräts und legt fest, welche Lichtkanäle erzeugt werden, wie sie sich verhalten und wohin die berechneten Werte ausgegeben werden. Im Verzeichnis [`docs/examples/setup/`](docs/examples/setup/) finden sich Beispielkonfigurationen für die gängigsten DALI-Gerätetypen.
-
-### Welches Beispiel verwenden?
-
-| Datei | DALI-Typ | Beschreibung |
-|-------|----------|--------------|
-| [`dali_dt6_cct_bri.json`](docs/examples/setup/dali_dt6_cct_bri.json) | **DT6** (Standard-DALI) | CCT-Steuerung über zwei separate DAPC-Kanäle (WW + CW), plus eigenständiger BRI-Kanal |
-| [`dali_dt8_cct_bri.json`](docs/examples/setup/dali_dt8_cct_bri.json) | **DT8** (Tunable White) | CCT-Steuerung nativ über ein DT8-Betriebsgerät (eine DALI-Adresse), plus eigenständiger BRI-Kanal |
-
-**DT6** verwenden wenn: Das Betriebsgerät kein natives DT8 unterstützt. CCT wird dabei durch Mischen zweier separater DALI-Adressen realisiert – eine für Warmweiß, eine für Kaltweiß.
-
-**DT8** verwenden wenn: Das Betriebsgerät den DALI Device Type 8 (Tunable White) vollständig implementiert. Die CCT-Steuerung erfolgt dann über einen einzelnen DALI-Befehl – präziser und synchroner als DT6.
+**Best for:** Complex schedules, sensor-based adjustments, multi-light synchronisation
 
 ---
 
-### DALI DT8 – Blockly-Ansicht
+### Switching Between Modes
 
-Die folgenden Screenshots zeigen die [`dali_dt8_cct_bri.json`](docs/examples/setup/dali_dt8_cct_bri.json) im PICO Blockly-Tool.
-
-**CCT-Target** (TC Space, DT8TC-Assignment):
-
-![DT8 CCT Target](docs/examples/setup/img/dali_dt8_cct_blockly.png)
-
-**BRI-Target** (Brightness Space, DAPC-Assignment):
-
-![DT8 BRI Target](docs/examples/setup/img/dali_dt8_bri_blockly.png)
+| From | To | How |
+|------|----|-----|
+| Manual | Follow External | Turn Follow External switch **ON** |
+| Follow External | Manual | Change brightness in dashboard — Follow disables automatically |
+| Follow External | Manual | Turn Follow External switch **OFF** |
+| Any | Internal Auto | Press the **Reset All Overrides** button |
 
 ---
 
-### DALI DT6 – Blockly-Ansicht
+## Entities
 
-Die folgenden Screenshots zeigen die [`dali_dt6_cct_bri.json`](docs/examples/setup/dali_dt6_cct_bri.json) im PICO Blockly-Tool.
+Each configured target creates the following entities:
 
-**CCT-Target** (TC Space, TCBLEND-Konvertierung + 2x DAPC):
+| Entity | ID pattern | Description |
+|--------|------------|-------------|
+| Light | `light.<target_name>` | Main light entity — brightness and color temp (TC mode) |
+| Switch | `switch.<target_name>_externe_automation_zulassen` | Follow External switch |
+| Button | — | Reset manual override |
+| Button | — | Reset automation override |
+| Button | — | Reset all overrides (returns to Internal Auto mode) |
 
-![DT6 CCT Target](docs/examples/setup/img/dali_dt6_cct_blockly.png)
+### Light Entity Attributes
 
-**BRI-Target** (Brightness Space, DAPC-Assignment):
-
-![DT6 BRI Target](docs/examples/setup/img/dali_dt6_bri_blockly.png)
+| Attribute | Values | Description |
+|-----------|--------|-------------|
+| `follow_external_automation` | `true` / `false` | Whether Follow External mode is active |
+| `mode_before_off` | `follow` / `device` / `manual` | Mode that was active before the light was turned off |
 
 ---
 
-### Aufbau der setup.json
+## MQTT Topics
 
-Eine `setup.json` ist ein JSON-Array von **Targets**. Jeder Target repräsentiert einen Lichtkanal, der vom PICO berechnet und ausgegeben wird.
+| Topic | Direction | Description |
+|-------|-----------|-------------|
+| `<base_topic>/state` | Device → HA | Device publishes current state (brightness, cct) |
+| `<base_topic>/override/manual` | HA → Device | Integration sends manual override commands |
+| `<base_topic>/override/automation` | HA → Device | Integration sends automation override commands |
 
-#### Target
+---
+
+## PICO setup.json Configuration
+
+The `setup.json` file defines which light targets the PICO creates, how they behave, and where the computed values are sent (DALI bus, MQTT, HTTP).
+
+### DALI Device Types
+
+| Type | Description |
+|------|-------------|
+| **DT8** | Native Tunable White — single DALI address, CCT sent natively via `DT8TC` |
+| **DT6** | Standard DALI — CCT produced by blending two separate DAPC channels (warm white + cool white) |
+
+Use **DT8** when the ballast fully implements DALI Device Type 8. Use **DT6** for all other CCT ballasts.
+
+Example configurations for both types are available in [`docs/examples/setup/`](docs/examples/setup/).
+
+### Structure
+
+A `setup.json` is a JSON array of **Targets**. Each target represents one light channel.
 
 ```json
 {
   "type"         : "TARGET",
   "space"        : "TC",
-  "comment"      : "...",
+  "comment"      : "building/area/room/lightentityCCT",
   "behaviors"    : [...],
   "destinations" : [...]
 }
 ```
 
-| Feld | Bedeutung |
-|------|-----------|
-| `type` | Immer `"TARGET"` |
-| `space` | Farbraum des Kanals: `TC` (Helligkeit + Farbtemperatur), `BRIGHTNESS` (nur Helligkeit), `RGB`, `WWCW` u.a. |
-| `comment` | Freitext, empfohlen: MQTT-Pfad des Targets (z.B. `building/area/room/.../lightentityCCT`) |
-| `behaviors` | Liste von Behaviors – bestimmt den Lichtwert, den der Target ausgibt |
-| `destinations` | Liste von Destinations – bestimmt, wohin der berechnete Wert gesendet wird |
+**Behaviors** determine the light value. The integration uses two override behaviors per target — one for automation control (`/override/automation`) and one for manual control (`/override/manual`).
+
+**Destinations** determine where the computed value is sent: `DALI` (bus output), `MESSAGING` (MQTT state publication), `HTTPSERVER` (HTTP state query).
 
 ---
 
-#### Behaviors
+## Context Tracking
 
-Behaviors werden in der angegebenen Reihenfolge ausgewertet. Das Ergebnis des ersten Behaviors wird an das zweite übergeben usw. In den Beispielen kommen drei Typen vor:
-
-**STATIC** – Standardwert beim Start (Ausgangspunkt für Overrides)
-
-```json
-{
-  "type"  : "STATIC",
-  "point" : {
-    "space"       : "TC",
-    "brightness"  : 0,
-    "temperature" : 2700,
-    "fade"        : 0
-  }
-}
-```
-
-Gibt einen unveränderlichen Punkt zurück. Dient als Basis, wenn kein Override aktiv ist. `fade` gibt an, wie schnell (in Sekunden) in diesen Wert eingeblendet wird.
-
-**OVERRIDE** – Steuerung über MQTT (Automation oder Manuell)
-
-```json
-{
-  "type"           : "OVERRIDE",
-  "topic"          : "building/.../lightentityCCT/override/automation",
-  "defaultpoint"   : { "space": "TC", "brightness": 0, "temperature": 2700, "fade": 0 },
-  "enabledatstart" : false,
-  "timeout"        : -1
-}
-```
-
-Abonniert ein MQTT-Topic und kann den Lichtwert bei Bedarf überschreiben. In den Beispielen gibt es immer zwei Override-Behaviors pro Target: eines für Automationen (`/override/automation`), eines für manuelle Steuerung (`/override/manual`). Diese entsprechen den HA-Entities dieser Integration.
-
-| Feld | Bedeutung |
-|------|-----------|
-| `topic` | MQTT-Topic, auf das der Override reagiert |
-| `defaultpoint` | Wert, der ausgegeben wird, wenn kein Point per MQTT gesendet wurde |
-| `enabledatstart` | `true` = Override ist nach Reboot aktiv; `false` = inaktiv (Normalfall) |
-| `timeout` | Sekunden bis zur automatischen Deaktivierung; `-1` = kein Timeout |
+All state changes made internally by the integration carry the Context ID `picolightnode_internal`. This allows external blueprints (e.g. Keyframe Scheduler) to distinguish between user-initiated actions and integration-internal updates, enabling reliable manual override detection.
 
 ---
 
-#### Destinations
+## Related Integrations
 
-Destinations bestimmen, was mit dem berechneten Lichtwert passiert.
-
-**DALI** – Ausgabe auf den DALI-Bus
-
-*DT8 (native CCT, eine Adresse):*
-
-```json
-{
-  "type"        : "DALI",
-  "conversions" : [],
-  "assignments" : [
-    { "type": "DT8TC", "offset": 0, "address": 0 }
-  ]
-}
-```
-
-`DT8TC` sendet Helligkeit und Farbtemperatur direkt an ein DALI-DT8-Betriebsgerät. Keine Konvertierung nötig.
-
-*DT6 (CCT über zwei DAPC-Kanäle):*
-
-```json
-{
-  "type"        : "DALI",
-  "conversions" : [
-    {
-      "type"       : "TCBLEND",
-      "mintemp"    : 2700,
-      "minpoint"   : { "space": "WWCW", "warm": 1, "cold": 0, "fade": 0 },
-      "maxtemp"    : 5700,
-      "maxpoint"   : { "space": "WWCW", "warm": 0, "cold": 1, "fade": 0 },
-      "blendgamma" : 1,
-      "dimgamma"   : 1
-    }
-  ],
-  "assignments" : [
-    { "type": "DAPC", "offset": 0, "address": 0 },
-    { "type": "DAPC", "offset": 1, "address": 1 }
-  ]
-}
-```
-
-`TCBLEND` konvertiert den TC-Wert (Helligkeit + Farbtemperatur) in einen WWCW-Wert (Warmweiß-Anteil + Kaltweiß-Anteil). Die beiden `DAPC`-Assignments senden Warmweiß (`offset: 0`) und Kaltweiß (`offset: 1`) als direkte Helligkeitsbefehle an zwei separate DALI-Adressen.
-
-**HTTPSERVER** – aktuellen Zustand per HTTP abfragbar machen
-
-```json
-{ "type": "HTTPSERVER", "name": "building/.../lightentityCCT" }
-```
-
-Macht den aktuellen Lichtwert unter `http://<pico-ip>/state` abrufbar. Wird von der HA-Integration für das State-Polling genutzt.
-
-**MESSAGING** – Zustandsänderungen per MQTT publizieren
-
-```json
-{
-  "type"      : "MESSAGING",
-  "topic"     : "building/.../lightentityCCT/state",
-  "sendlocal" : false,
-  "sendmqtt"  : true,
-  "qos"       : 0,
-  "retain"    : false,
-  "assignments" : [
-    { "trigger": "ALWAYS", "key": "brightness", "channel": "0", "asbool": false, "necessary": false },
-    { "trigger": "ALWAYS", "key": "cct",        "channel": "1", "asbool": false, "necessary": false }
-  ]
-}
-```
-
-Publiziert den Lichtzustand auf ein MQTT-Topic. `assignments` legt fest, welche Kanäle des Farbraums in welche JSON-Keys gemappt werden. `channel: "0"` ist im TC-Raum die Helligkeit, `channel: "1"` die Farbtemperatur. Die HA-Integration abonniert dieses Topic, um den aktuellen Zustand anzuzeigen.
+| Integration | Repository |
+|-------------|------------|
+| Keyframe Scheduler | https://github.com/mjmijh/keyframe-scheduler |
+| CCT Astronomy | https://github.com/mjmijh/cct-astronomy |
 
 ---
 
-## 🎯 Was ist NEU in v2.0.18?
+## Issues and Support
 
-### ✅ Context Tracking
-- Alle internen State Changes haben Context ID: `picolightnode_internal`
-- Ermöglicht Blueprints zu unterscheiden zwischen User Actions und Integration Logic
-- **Wichtig für Keyframe Scheduler Blueprint Manual Override Detection**
-
-### ✅ Smart Restore überarbeitet
-- Follow-Mode wird beim Einschalten **nicht** automatisch wiederhergestellt
-- Einschalten aus Follow-Mode → Manual Mode mit gespeicherter Helligkeit
-- Verhindert Konflikte mit Manual Override Detection in externen Automations (z.B. Keyframe Scheduler)
-- Follow External Switch im Dashboard als "Automatik AN" empfohlen
-
-### ✅ CONF_AUTOMATION_OVERRIDE_TOPIC Fix
-- Behebt Bug wo automation_override_topic nicht gefunden wurde
-- Follow External funktioniert jetzt zuverlässig
-
----
-
-## 🔧 Installation
-
-```bash
-cd /config
-unzip -o picolightnode_v2.0.18.zip
-ha core restart
-```
-
----
-
-## 🎯 Behavior Matrix
-
-### Startup
-```
-HA startet → ALLE Overrides reset → Internal Auto
-User kann Automation erstellen:
-  trigger: homeassistant.start
-  action: switch.turn_on (Follow External Switches)
-```
-
-### Turn-Off → Turn-On (ohne Slider)
-
-| Vor Turn-Off | Nach Turn-On |
-|--------------|--------------|
-| Follow External AN | **Manual (b=gespeichert)** — Follow External muss danach manuell aktiviert werden |
-| Internal Auto | Internal Auto ✅ |
-| Manual (b=64) | Manual (b=64) ✅ |
-
-### Turn-On MIT Slider
-
-| Vor Turn-Off | Nach Turn-On mit Slider |
-|--------------|-------------------------|
-| Follow External AN | Manual (Follow AUS) ✅ |
-| Internal Auto | Manual ✅ |
-| Manual (b=64) | Manual (b=neu) ✅ |
-
----
-
-## 📊 MQTT Messages
-
-### Startup Reset
-```json
-// Manual Override Topic
-{"enabled": false, "point": {"space": "TC", "brightness": 1.0, "temperature": 3500, "fade": 0}}
-
-// Automation Override Topic
-{"enabled": false, "point": {"space": "TC", "brightness": 1.0, "temperature": 3500, "fade": 0}}
-```
-
-### Turn-On aus Follow Mode (Manual Fallback)
-```json
-// Manual Override Topic — Follow External wird NICHT automatisch wiederhergestellt
-{"enabled": true, "point": {"space": "TC", "brightness": 0.5, "temperature": 4000, "fade": 3.0}}
-```
-
-### Smart Turn-On (Device Mode)
-```json
-// Both Topics
-{"enabled": false, "point": {...}}
-```
-
----
-
-## 🔄 Migration von v1.x
-
-1. **Backup** alte Konfiguration
-2. **Uninstall** v1.x
-3. **Install** v2.0.0
-4. **HA Restart**
-5. **Optional**: Startup Automation erstellen für Follow External
-
----
-
-## 🐛 Known Issues
-
-**KEINE** - v2.0.0 ist ein Clean Slate! 🎯
-
----
-
-## 📝 Breaking Changes
-
-- **Alte Buttons entfernt**: "PICO interne Automatik aktivieren" → ersetzt durch "Alle Overrides zurücksetzen"
-- **Startup Behavior**: Alle Overrides werden resettet (vorher: behalten)
-- **State Management**: Jetzt persistent via Entity Attributes
-
----
-
-**Version**: 2.0.0  
-**Status**: PRODUCTION READY ✅  
-**Architecture**: CLEAN & STABLE 🎯
+https://github.com/mjmijh/picolightnode-ha/issues
