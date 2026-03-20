@@ -88,6 +88,10 @@ Por cada objetivo configurado se crean las siguientes entidades:
 |---------|--------------|-------------|
 | Luz | `light.<target_name>` | Entidad de luz principal — brillo y temperatura de color (modo TC) |
 | Interruptor | `switch.<target_name>_externe_automation_zulassen` | Interruptor Follow External |
+| Sensor | `sensor.<target_name>_dim` | Brillo actual en % (0–100) |
+| Sensor | `sensor.<target_name>_cct` | Temperatura de color actual en Kelvin |
+| Sensor binario | `binary_sensor.<target_name>_manual_override_active` | Anulación manual activa |
+| Sensor binario | `binary_sensor.<target_name>_automation_override_active` | Anulación de automatización activa |
 | Botón | — | Restablecer anulación manual |
 | Botón | — | Restablecer anulación de automatización |
 | Botón | — | Restablecer todas las anulaciones (vuelve al modo de automatización interna) |

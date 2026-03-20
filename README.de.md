@@ -88,6 +88,10 @@ Für jedes konfigurierte Target werden folgende Entities erstellt:
 |--------|-----------|--------------|
 | Licht | `light.<target_name>` | Haupt-Light-Entity — Helligkeit und Farbtemperatur (TC-Modus) |
 | Schalter | `switch.<target_name>_externe_automation_zulassen` | Follow-External-Schalter |
+| Sensor | `sensor.<target_name>_dim` | Aktuelle Helligkeit in % (0–100) |
+| Sensor | `sensor.<target_name>_cct` | Aktuelle Farbtemperatur in Kelvin |
+| Binärsensor | `binary_sensor.<target_name>_manual_override_active` | Manueller Override aktiv |
+| Binärsensor | `binary_sensor.<target_name>_automation_override_active` | Automation-Override aktiv |
 | Schaltfläche | — | Manuellen Override zurücksetzen |
 | Schaltfläche | — | Automation-Override zurücksetzen |
 | Schaltfläche | — | Alle Overrides zurücksetzen (kehrt zur internen Automation zurück) |
