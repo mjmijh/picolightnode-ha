@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import PERCENTAGE, UnitOfTemperature
+from homeassistant.const import PERCENTAGE, UnitOfTemperature, EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .base_entity import PicoTargetDeviceInfoMixin
@@ -18,6 +18,7 @@ class _BasePicoSensor(
     """Base class for PICOlightnode sensors."""
     
     _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     def __init__(
         self,
