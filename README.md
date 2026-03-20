@@ -1,9 +1,8 @@
-# PICOlightnode v2.0.19
+# PICOlightnode
 
 Home Assistant custom integration for PICO lighting hardware controlled via MQTT. The PICO device manages DALI lighting and exposes its targets over MQTT.
 
-- [README (Deutsch)](README.de.md)
-- [README (Espanol)](README.es.md)
+> Auch verfügbar auf [Deutsch](README.de.md) | También disponible en [Español](README.es.md)
 
 ---
 
@@ -20,13 +19,13 @@ Home Assistant custom integration for PICO lighting hardware controlled via MQTT
 
 ```bash
 cd /config
-unzip -o picolightnode_v2.0.19.zip
+unzip -o picolightnode_v2.0.20.zip
 ha core restart
 ```
 
 **HACS (custom repository):**
 
-Add `https://github.com/mjmijh/picolightnode-ha` as a custom repository in HACS, then install the integration and restart Home Assistant.
+Add `https://github.com/mjmijh/picolightnode-ha` as a custom repository in HACS, install the integration, and restart Home Assistant.
 
 ---
 
@@ -40,7 +39,7 @@ Direct control via the Home Assistant dashboard.
 
 - No special setup required
 - Follow External switch: **OFF**
-- Smart Restore remembers brightness and color temperature on the next turn-on
+- Smart Restore remembers brightness and colour temperature on the next turn-on
 
 **Best for:** Ad-hoc adjustments, full manual control
 
@@ -87,7 +86,7 @@ Each configured target creates the following entities:
 
 | Entity | ID pattern | Description |
 |--------|------------|-------------|
-| Light | `light.<target_name>` | Main light entity — brightness and color temp (TC mode) |
+| Light | `light.<target_name>` | Main light entity — brightness and colour temp (TC mode) |
 | Switch | `switch.<target_name>_externe_automation_zulassen` | Follow External switch |
 | Button | — | Reset manual override |
 | Button | — | Reset automation override |
@@ -106,7 +105,7 @@ Each configured target creates the following entities:
 
 | Topic | Direction | Description |
 |-------|-----------|-------------|
-| `<base_topic>/state` | Device → HA | Device publishes current state (brightness, cct) |
+| `<base_topic>/state` | Device → HA | Device publishes current state (brightness, CCT) |
 | `<base_topic>/override/manual` | HA → Device | Integration sends manual override commands |
 | `<base_topic>/override/automation` | HA → Device | Integration sends automation override commands |
 
@@ -126,6 +125,26 @@ The `setup.json` file defines which light targets the PICO creates, how they beh
 Use **DT8** when the ballast fully implements DALI Device Type 8. Use **DT6** for all other CCT ballasts.
 
 Example configurations for both types are available in [`docs/examples/setup/`](docs/examples/setup/).
+
+### DT8 — Blockly View
+
+**CCT Target** (TC space, DT8TC assignment):
+
+![DT8 CCT Target](docs/examples/setup/img/dali_dt8_cct_blockly.png)
+
+**Brightness Target** (Brightness space, DAPC assignment):
+
+![DT8 Brightness Target](docs/examples/setup/img/dali_dt8_bri_blockly.png)
+
+### DT6 — Blockly View
+
+**CCT Target** (TC space, TCBLEND conversion + 2× DAPC):
+
+![DT6 CCT Target](docs/examples/setup/img/dali_dt6_cct_blockly.png)
+
+**Brightness Target** (Brightness space, DAPC assignment):
+
+![DT6 Brightness Target](docs/examples/setup/img/dali_dt6_bri_blockly.png)
 
 ### Structure
 
